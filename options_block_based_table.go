@@ -11,7 +11,7 @@ const (
 	// traditional block type
 	KDataBlockBinarySearch = 0
 	// additional hash index
-	kDataBlockBinaryAndHash = 1
+	KDataBlockBinaryAndHash = 1
 )
 
 // IndexType specifies the index type that will be used for this table.
