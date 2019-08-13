@@ -146,6 +146,10 @@ func (opts *Options) SetComparator(value Comparator) {
 	C.rocksdb_options_set_comparator(opts.c, opts.ccmp)
 }
 
+func (opts *Options) SetUserKVComparator() {
+	C.rocksdb_options_set_userkv_comparator(opts.c)
+}
+
 // SetMergeOperator sets the merge operator which will be called
 // if a merge operations are used.
 // Default: nil

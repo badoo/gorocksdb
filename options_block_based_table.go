@@ -4,6 +4,16 @@ package gorocksdb
 // #include "gorocksdb.h"
 import "C"
 
+// DataIndexType is the index type that will be used for the data block.
+type DataBlockIndexType uint
+
+const (
+	// traditional block type
+	KDataBlockBinarySearch = 0
+	// additional hash index
+	kDataBlockBinaryAndHash = 1
+)
+
 // IndexType specifies the index type that will be used for this table.
 type IndexType uint
 
@@ -155,4 +165,9 @@ func (opts *BlockBasedTableOptions) SetWholeKeyFiltering(value bool) {
 // Default: kBinarySearch
 func (opts *BlockBasedTableOptions) SetIndexType(value IndexType) {
 	C.rocksdb_block_based_options_set_index_type(opts.c, C.int(value))
+}
+
+// SetDataBlockIndexType sets
+func (opts *BlockBasedTableOptions) SetDataBlockIndexType(value DataBlockIndexType) {
+	C.rocksdb_block_based_options_set_data_block_index_type(opts.c, C.int(value))
 }
