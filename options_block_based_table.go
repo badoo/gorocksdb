@@ -75,6 +75,25 @@ func (opts *BlockBasedTableOptions) SetPinL0FilterAndIndexBlocksInCache(value bo
 	C.rocksdb_block_based_options_set_pin_l0_filter_and_index_blocks_in_cache(opts.c, boolToChar(value))
 }
 
+// SetCacheIndexAndFilterBlocksWithHighPriority sets cache_index_and_filter_blocks_with_high_priority
+// If cache_index_and_filter_blocks is enabled, cache index and filter
+// blocks with high priority. If set to true, depending on implementation of
+// block cache, index and filter blocks may be less likely to be evicted
+// than data blocks.
+func (opts *BlockBasedTableOptions) SetCacheIndexAndFilterBlocksWithHighPriority(value bool) {
+	C.rocksdb_block_based_options_set_cache_index_and_filter_blocks_with_high_priority(opts.c, boolToChar(value))
+}
+
+// SetPinTopLevelIndexAndFilter sets pin_top_level_index_and_filter.
+// If cache_index_and_filter_blocks is true and the below is true, then
+// the top-level index of partitioned filter and index blocks are stored in
+// the cache, but a reference is held in the "table reader" object so the
+// blocks are pinned and only evicted from cache when the table reader is
+// freed. This is not limited to l0 in LSM tree.
+func (opts *BlockBasedTableOptions) SetPinTopLevelIndexAndFilter(value bool) {
+	C.rocksdb_block_based_options_set_pin_top_level_index_and_filter(opts.c, boolToChar(value))
+}
+
 // SetBlockSize sets the approximate size of user data packed per block.
 // Note that the block size specified here corresponds opts uncompressed data.
 // The actual size of the unit read from disk may be smaller if
