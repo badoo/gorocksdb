@@ -548,6 +548,30 @@ func (db *DB) GetPropertyCF(propName string, cf *ColumnFamilyHandle) string {
 	return C.GoString(cValue)
 }
 
+// GetPropertyInt returns the value of an integer database property.
+func (db *DB) GetPropertyInt(propName string) (uint64, error) {
+	cprop := C.CString(propName)
+	defer C.free(unsafe.Pointer(cprop))
+	var cValue C.uint64_t
+	cRet := C.rocksdb_property_int(db.c, cprop, &cValue)
+	if cRet != 0 {
+		return 0, fmt.Errorf("failed to get database integer property '%s'", propName)
+	}
+	return uint64(cValue), nil
+}
+
+// GetPropertyIntCF returns the value of an integer database property.
+func (db *DB) GetPropertyIntCF(propName string, cf *ColumnFamilyHandle) (uint64, error) {
+	cprop := C.CString(propName)
+	defer C.free(unsafe.Pointer(cprop))
+	var cValue C.uint64_t
+	cRet := C.rocksdb_property_int_cf(db.c, cf.c, cprop, &cValue)
+	if cRet != 0 {
+		return 0, fmt.Errorf("failed to get column family integer property '%s'", propName)
+	}
+	return uint64(cValue), nil
+}
+
 // CreateColumnFamily create a new column family.
 func (db *DB) CreateColumnFamily(opts *Options, name string) (*ColumnFamilyHandle, error) {
 	var (
