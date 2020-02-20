@@ -2,6 +2,7 @@ package gorocksdb
 
 // #include <stdlib.h>
 // #include "rocksdb/c.h"
+// #include "gorocksdb_iter.h"
 import "C"
 import (
 	"errors"
@@ -502,6 +503,32 @@ func (db *DB) NewIterator(opts *ReadOptions) *Iterator {
 func (db *DB) NewIteratorCF(opts *ReadOptions, cf *ColumnFamilyHandle) *Iterator {
 	cIter := C.rocksdb_create_iterator_cf(db.c, opts.c, cf.c)
 	return NewNativeIterator(unsafe.Pointer(cIter))
+}
+
+func (db *DB) GetValuesWithPrefixCF(opts *ReadOptions, cf *ColumnFamilyHandle, prefix []byte, preAllocSize int) (*Values, error) {
+	iter := C.rocksdb_create_iterator_cf(db.c, opts.c, cf.c)
+
+	cIter := (*C.rocksdb_iterator_t)(iter)
+	cPrefix := byteToChar(prefix)
+
+	var valuesBatch *C.gorocksdb_values_t
+	res := C.gorocksdb_iterator_get_values_for_prefix(cIter, cPrefix, C.size_t(len(prefix)), &valuesBatch)
+	if res < 0 {
+		var cErr *C.char
+		C.rocksdb_iter_get_error(cIter, &cErr)
+		if cErr != nil {
+			defer C.free(unsafe.Pointer(cErr))
+			err := errors.New(C.GoString(cErr))
+			C.rocksdb_iter_destroy(cIter)
+			return nil, err
+		}
+		C.rocksdb_iter_destroy(cIter)
+		return nil, errors.New("unknown error or out-of-memory")
+	}
+	C.rocksdb_iter_destroy(cIter)
+
+	values := NewValues(unsafe.Pointer(valuesBatch))
+	return values, nil
 }
 
 func (db *DB) GetUpdatesSince(seqNumber uint64) (*WalIterator, error) {
