@@ -154,6 +154,10 @@ func (opts *Options) SetUserKVMergeOperator() {
 	C.rocksdb_options_set_userkv_merge_operator(opts.c)
 }
 
+func (opts *Options) SetMeetlistRomancesMergeOperator() {
+	C.rocksdb_options_set_meetlist_romances_merge_operator(opts.c)
+}
+
 // SetMergeOperator sets the merge operator which will be called
 // if a merge operations are used.
 // Default: nil
